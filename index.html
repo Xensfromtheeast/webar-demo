@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebAR Demo</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <!-- AR scene -->
+    <a-scene
+      embedded
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true;"
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+    >
+      <!-- Place model -->
+      <a-entity
+        gltf-model="./assets/model.glb"
+        scale="0.5 0.5 0.5"
+        position="0 0 0"
+        rotation="0 180 0"
+      ></a-entity>
+
+      <!-- Camera -->
+      <a-marker-camera preset="hiro"></a-marker-camera>
+    </a-scene>
+  </body>
+</html>
