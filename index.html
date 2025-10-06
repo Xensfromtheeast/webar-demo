@@ -1,80 +1,365 @@
-<script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Entumo AR — Agenda & Directions</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 
-<!--<script src='https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js'></script>-->
-<script src='../../../../aframe/build/aframe-ar-nft.js'></script>
+  <!-- A-Frame and AR.js (A-Frame build) -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.4/aframe/build/aframe-ar-nft.min.js"></script>
+  <!-- Note: using aframe-ar-nft build so we keep marker + location support. -->
 
-<script>
-    window.onload = function() {
-        AFRAME.registerComponent('videohandler', {
-            init: function () {
-                var marker = this.el;
-
-                this.vid = document.querySelector("#vid");
-
-                marker.addEventListener('markerFound', function () {
-                    this.vid.play();
-                }.bind(this));
-
-		marker.addEventListener('markerLost', function() {
-			this.vid.pause();
-			this.vid.currentTime = 0;
-		}.bind(this));
-            }
-        });
-    };
-</script>
-
-<style>
-    .arjs-loader {
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+  <style>
+    body { margin:0; font-family: Arial, Helvetica, sans-serif; background: #111; color:#fff; }
+    #ui {
+      position: fixed; left: 12px; top: 12px; z-index: 1000;
+      background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px;
+      width: calc(100% - 48px);
+      max-width: 420px;
     }
-
-    .arjs-loader div {
-        text-align: center;
-        font-size: 1.25em;
-        color: white;
+    #ui h3 { margin: 0 0 8px 0; font-size: 16px; }
+    #roomList button, #controls button {
+      display:block; width:100%; margin:6px 0; padding:8px; border: none; border-radius:6px;
+      background: #1e90ff; color:#fff; font-size:14px;
     }
-</style>
+    #controls button.secondary { background:#666; }
+    #info { font-size:12px; color:#ddd; margin-top:6px; }
+    #enter-ar { position:fixed; right:12px; bottom:12px; z-index:1001; padding:10px 14px; border-radius:8px; background:#28a745; color:#fff; border:none; font-weight:600; }
+  </style>
+</head>
+<body>
 
-<body style='margin : 0px; overflow: hidden;'>
-    <div class="arjs-loader">
-        <div>Loading, please wait...</div>
+  <!-- UI overlay -->
+  <div id="ui">
+    <h3>Entumo AR — Agendas & Directions</h3>
+
+    <div id="roomList">
+      <!-- Buttons to show navigation arrows to each room -->
+      <button data-room="onguan">Navigate to Onguan / Uni (Stage 1)</button>
+      <button data-room="nabo">Navigate to Nabo / Hare (Stage 2)</button>
+      <button data-room="boardroom">Navigate to Executive Boardroom (Podcast Room)</button>
     </div>
-    <a-scene
-        vr-mode-ui="enabled: false;"
-        renderer='antialias: true; alpha: true; precision: medium;'
-        embedded arjs='trackingMethod: best; sourceType: webcam; debugUIEnabled: false;'>
 
-        <a-assets>
-            <video src="mov_bbb.mp4"
-                preload="auto" id="vid" response-type="arraybuffer" loop
-                crossorigin webkit-playsinline autoplay muted playsinline>
-            </video>
-        </a-assets>
+    <div id="controls">
+      <button id="exitDirections" class="secondary">Exit Directions</button>
+    </div>
 
-        <a-nft
-            videohandler
-            type='nft' url='../../data/dataNFT/pinball'
-            smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5"
-        >
-            <a-video
-                src="#vid"
-                position='50 150 -100'
-                rotation='90 0 180'
-                width='300'
-                height='175'
-                >
-            </a-video>
-        </a-nft>
-		<a-entity camera></a-entity>
-	</a-scene>
+    <div id="info">
+      • Scan (camera) any room marker to view that room's agenda.<br>
+      • Use two fingers to pinch-to-zoom and one-finger drag to rotate the agenda overlay.<br>
+      • Location-based arrows require GPS + compass (allow location access).<br>
+      • Make sure your browser is up-to-date (Safari on iOS, Chrome on Android).
+    </div>
+  </div>
+
+  <!-- Button to request fullscreen / start AR (optional UX helper) -->
+  <button id="enter-ar">Start Camera</button>
+
+  <!-- AR Scene -->
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    renderer="logarithmicDepthBuffer: true; antialias: true;"
+    arjs="sourceType: webcam; debugUIEnabled: false;"
+  >
+    <!-- Marker-based entities: one marker per room. -->
+    <!-- Replace the patt URLs with your generated .patt files (upload them to /assets/) -->
+    <!-- Agenda PNGs are placed as plane textures so they appear as floating posters. -->
+
+    <!-- ONG/UAN marker (Stage 1) -->
+    <a-marker type="pattern" url="assets/markers/onguan.patt" id="marker-onguan">
+      <a-plane id="agenda-onguan"
+               src="assets/agendas/onguan.png"
+               width="1.6" height="0.9"
+               position="0 0 0"
+               rotation="-90 0 0"
+               material="transparent:true; shader:flat;">
+      </a-plane>
+    </a-marker>
+
+    <!-- NABO / HARE marker (Stage 2) -->
+    <a-marker type="pattern" url="assets/markers/nabo.patt" id="marker-nabo">
+      <a-plane id="agenda-nabo"
+               src="assets/agendas/nabo.png"
+               width="1.6" height="0.9"
+               position="0 0 0"
+               rotation="-90 0 0"
+               material="transparent:true; shader:flat;">
+      </a-plane>
+    </a-marker>
+
+    <!-- EXECUTIVE Boardroom marker -->
+    <a-marker type="pattern" url="assets/markers/boardroom.patt" id="marker-boardroom">
+      <a-plane id="agenda-boardroom"
+               src="assets/agendas/boardroom.png"
+               width="1.6" height="0.9"
+               position="0 0 0"
+               rotation="-90 0 0"
+               material="transparent:true; shader:flat;">
+      </a-plane>
+    </a-marker>
+
+    <!-- Camera for marker tracking -->
+    <a-entity camera></a-entity>
+
+    <!-- ===== Location-Based Navigation =====
+         We use gps-camera + gps-entity-place. Each arrow is created dynamically
+         when the user selects a room. For initial examples we place 3 hidden anchors.
+         Replace the coordinates below with the real lat/lon of each location.
+    -->
+    <!-- Note: GPS entities may not be visible on desktop; test on mobile over HTTPS. -->
+    <!-- We'll create arrows dynamically with JS when navigation is started. -->
+
+  </a-scene>
+
+  <!-- ========== Scripts: gesture handling & navigation logic ========== -->
+  <script>
+  /**
+   * Simple gesture handler for A-Frame plane entities:
+   * - Pinch (two touches) -> scale
+   * - Single finger horizontal move -> rotate Y
+   *
+   * This code attaches touch listeners to the scene while a marker is visible.
+   * It is intentionally simple and beginner-friendly. For production you may
+   * swap in a maintained gesture library (e.g. arjs-gestures).
+   */
+
+  (function () {
+    const scene = document.querySelector('a-scene');
+    if (!scene) return;
+
+    // Map room IDs <-> marker and agenda element IDs.
+    const rooms = {
+      ong: { markerId: 'marker-onguan', agendaId: 'agenda-onguan' },
+      nab: { markerId: 'marker-nabo', agendaId: 'agenda-nabo' },
+      brd: { markerId: 'marker-boardroom', agendaId: 'agenda-boardroom' }
+    };
+
+    // Provide a quick lookup by marker element id
+    const markerToAgenda = {
+      'marker-onguan': document.getElementById('agenda-onguan'),
+      'marker-nabo': document.getElementById('agenda-nabo'),
+      'marker-boardroom': document.getElementById('agenda-boardroom'),
+    };
+
+    // Default scale limits for agendas
+    const MIN_SCALE = 0.3;
+    const MAX_SCALE = 4.5;
+
+    // Track touches for pinch
+    let initialPinchDistance = null;
+    let initialScale = 1;
+    let activeAgenda = null; // currently-visible agenda entity (A-Frame element)
+    let lastSingleTouchX = null;
+
+    // Helper: get distance between two touches
+    function getDistance(t0, t1) {
+      const dx = t0.clientX - t1.clientX;
+      const dy = t0.clientY - t1.clientY;
+      return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    // When a marker is found, show the agenda and attach gesture listeners
+    Object.keys(markerToAgenda).forEach(markerId => {
+      const marker = document.getElementById(markerId);
+      const agenda = markerToAgenda[markerId];
+
+      // hide agendas by default until markerFound (a-plane still exists, but we'll scale to 0)
+      agenda.setAttribute('visible', 'true');
+      agenda.object3D.scale.set(1,1,1); // default
+      agenda.style.display = 'block';
+
+      marker.addEventListener('markerFound', () => {
+        console.log(markerId + ' found');
+        activeAgenda = agenda;
+        // store current scale value
+        const s = agenda.object3D.scale;
+        initialScale = s.x || 1;
+        // Reset pinch distance
+        initialPinchDistance = null;
+        // Add touch listeners to the scene (mobile)
+        window.addEventListener('touchstart', onTouchStart, { passive: false });
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
+        window.addEventListener('touchend', onTouchEnd, { passive: false });
+      });
+
+      marker.addEventListener('markerLost', () => {
+        console.log(markerId + ' lost');
+        activeAgenda = null;
+        initialPinchDistance = null;
+        window.removeEventListener('touchstart', onTouchStart);
+        window.removeEventListener('touchmove', onTouchMove);
+        window.removeEventListener('touchend', onTouchEnd);
+      });
+    });
+
+    function onTouchStart(evt) {
+      if (!activeAgenda) return;
+      if (evt.touches.length === 2) {
+        // start pinch
+        initialPinchDistance = getDistance(evt.touches[0], evt.touches[1]);
+        const s = activeAgenda.object3D.scale;
+        initialScale = s.x || 1;
+      } else if (evt.touches.length === 1) {
+        lastSingleTouchX = evt.touches[0].clientX;
+      }
+    }
+
+    function onTouchMove(evt) {
+      if (!activeAgenda) return;
+      evt.preventDefault(); // avoid scroll while interacting
+      if (evt.touches.length === 2 && initialPinchDistance) {
+        const curDist = getDistance(evt.touches[0], evt.touches[1]);
+        const scaleFactor = curDist / initialPinchDistance;
+        let newScale = initialScale * scaleFactor;
+        newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+        activeAgenda.object3D.scale.set(newScale, newScale, newScale);
+      } else if (evt.touches.length === 1 && lastSingleTouchX !== null) {
+        // horizontal drag => rotate Y
+        const curX = evt.touches[0].clientX;
+        const dx = curX - lastSingleTouchX;
+        // Convert dx to rotation degrees (tweak factor as needed)
+        const rotFactor = 0.2; // degrees per pixel
+        const currentRot = activeAgenda.getAttribute('rotation') || {x:-90, y:0, z:0};
+        const newY = (currentRot.y || 0) + dx * rotFactor;
+        activeAgenda.setAttribute('rotation', { x: -90, y: newY, z: 0 });
+        lastSingleTouchX = curX;
+      }
+    }
+
+    function onTouchEnd(evt) {
+      if (evt.touches.length === 0) {
+        initialPinchDistance = null;
+        lastSingleTouchX = null;
+      }
+    }
+
+    // ======= Location-based navigation logic =======
+    // We'll create directional arrows (as simple 3D cones) anchored to coordinates
+    // using gps-entity-place when the user requests navigation.
+    // Replace the sample coordinates below with actual lat/lon for each destination.
+    const roomCoords = {
+      // these are placeholders: REPLACE with actual coords for your venue
+      'onguan': { lat: -1.133781, lon: 36.913364 },   // Stage 1 (Onguan/Uni)
+      'nabo':   { lat: -1.140393, lon: 36.910137 },   // Stage 2 (Nabo/Hare)
+      'boardroom': { lat: -1.139640, lon: 36.924872 } // Executive Boardroom
+    };
+
+    // Keep track of arrow entities created
+    let activeArrows = [];
+
+    // Utility: create an arrow entity at lat/lon. Returns the A-Frame element.
+    function createArrowAt(lat, lon, labelText) {
+      // Container for arrow so we can set orientation / billboard behavior
+      const container = document.createElement('a-entity');
+      container.setAttribute('gps-entity-place', `latitude: ${lat}; longitude: ${lon};`);
+      container.setAttribute('look-at', '[camera]');
+      container.setAttribute('scale', '1 1 1');
+
+      // The arrow (cone) pointing up — we will tilt it to point horizontally using rotation.
+      const arrow = document.createElement('a-cone');
+      arrow.setAttribute('height', '0.6');
+      arrow.setAttribute('radius-bottom', '0.25');
+      arrow.setAttribute('radius-top', '0.01');
+      arrow.setAttribute('position', '0 0.3 0'); // raise slightly above ground
+      arrow.setAttribute('rotation', '-90 0 0'); // point horizontally toward camera later
+      arrow.setAttribute('material', 'color: #ffcc00; shader: flat; opacity: 0.95;');
+
+      // Optional label
+      const label = document.createElement('a-text');
+      label.setAttribute('value', labelText || '');
+      label.setAttribute('align', 'center');
+      label.setAttribute('position', '0 0.9 0');
+      label.setAttribute('look-at', '[camera]');
+      label.setAttribute('scale', '3 3 3');
+
+      container.appendChild(arrow);
+      container.appendChild(label);
+
+      // Add to scene
+      scene.appendChild(container);
+      return container;
+    }
+
+    // Start navigation to a named room
+    function startNavigationTo(roomKey) {
+      exitDirections(); // remove previous arrows
+      const coords = roomCoords[roomKey];
+      if (!coords) {
+        alert('No coordinates configured for that room. Ask the event admin to set them.');
+        return;
+      }
+      // Create a few nearby arrows to guide path (for simplicity create one arrow at the destination)
+      const arrow = createArrowAt(coords.lat, coords.lon, `→ ${roomKey.toUpperCase()}`);
+      activeArrows.push(arrow);
+
+      // Show a small toast / info
+      console.log('Navigation started to', roomKey, coords);
+      // On some devices, geolocation may take a moment; ask the camera/gps permission early
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          console.log('Geolocation active. Position sample', pos.coords);
+        }, (err) => {
+          console.warn('Geolocation error: ', err);
+        }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 });
+      }
+    }
+
+    // Remove all active arrows and clean up
+    function exitDirections() {
+      activeArrows.forEach(a => {
+        if (a.parentNode) a.parentNode.removeChild(a);
+      });
+      activeArrows = [];
+      console.log('Exited navigation mode');
+    }
+
+    // Hook up UI buttons
+    document.getElementById('roomList').addEventListener('click', (ev) => {
+      const btn = ev.target.closest('button');
+      if (!btn) return;
+      const roomKey = btn.getAttribute('data-room');
+      if (!roomKey) return;
+      // Map friendly keys to our config
+      if (roomKey === 'onguan') startNavigationTo('onguan');
+      if (roomKey === 'nabo') startNavigationTo('nabo');
+      if (roomKey === 'boardroom') startNavigationTo('boardroom');
+    });
+
+    document.getElementById('exitDirections').addEventListener('click', () => {
+      exitDirections();
+    });
+
+    // Small helper for enter-ar: try to request camera play on mobile (some browsers require gesture)
+    document.getElementById('enter-ar').addEventListener('click', async () => {
+      // If device requires user gesture to start camera, this will help
+      try {
+        const arSource = scene.components['arjs-source'];
+        if (arSource) {
+          await arSource.init();
+        }
+        // hide button after start
+        document.getElementById('enter-ar').style.display = 'none';
+      } catch (e) {
+        console.warn('Could not start AR source via button:', e);
+      }
+    });
+
+    // Preload agenda PNGs for faster display (basic technique)
+    const preloadImages = [
+      'assets/agendas/onguan.png',
+      'assets/agendas/nabo.png',
+      'assets/agendas/boardroom.png'
+    ];
+    preloadImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+
+    // Final note: Make sure your page is served via HTTPS (GitHub Pages) or geolocation won't work.
+    console.log('Entumo AR initialized. Ensure markers (.patt) and agendas are uploaded to /assets/ before publishing.');
+  })();
+  </script>
 </body>
+</html>
