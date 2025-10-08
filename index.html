@@ -14,7 +14,8 @@
   <style>
     body, html { margin: 0; overflow: hidden; font-family: 'Poppins', sans-serif; }
     #menu, #helpPanel { position: absolute; z-index: 10; background: rgba(0,0,0,0.7); border-radius: 10px; color: white; padding: 10px; }
-    #menu { top: 10px; left: 10px; width: 180px; transform: translateX(-220px); opacity: 0; transition: all 0.4s ease; }
+    #menu { top: 10px; left: 10px; width: 180px; display: flex; flex-direction: column; align-items: center; gap: 10px; flex-wrap: nowrap; transform: translateX(-220px); opacity: 0; transition: all 0.4s ease; max-height: 85vh; overflow-y: auto; }
+    #menu h3 { text-align: center; width: 100%; margin-bottom: 5px; }
     #menu.visible { transform: translateX(0); opacity: 1; }
     #helpPanel { bottom: 100px; left: 10px; width: 300px; transform: translateY(120%); opacity: 0; transition: all 0.4s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); }
     #closeHelp { position: absolute; top: 6px; right: 8px; background: transparent; color: white; border: none; font-size: 20px; cursor: pointer; opacity: 0; transform: translateY(-8px); transition: opacity 0.4s ease, transform 0.4s ease; }
@@ -226,6 +227,7 @@
   </script>
 </body>
 </html>
+
 
 
 
