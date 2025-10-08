@@ -14,10 +14,19 @@
   <style>
     body, html { margin: 0; overflow: hidden; font-family: 'Poppins', sans-serif; }
     #menu, #helpPanel { position: absolute; z-index: 10; background: rgba(0,0,0,0.7); border-radius: 10px; color: white; padding: 10px; }
-    #menu { top: 10px; left: 10px; display: none; }
-    #helpPanel { bottom: 10px; left: 10px; width: 300px; display: none; }
-    .icon-btn { background: none; border: none; margin: 5px; cursor: pointer; }
-    .icon-btn img { width: 60px; height: 60px; border-radius: 50%; }
+    #menu { top: 10px; left: 10px; width: 180px; transform: translateX(-220px); opacity: 0; transition: all 0.4s ease; }
+    #menu.visible { transform: translateX(0); opacity: 1; }
+    #helpPanel { bottom: 10px; left: 10px; width: 300px; transform: translateY(120%); opacity: 0; transition: all 0.4s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); }
+    #closeHelp { position: absolute; top: 6px; right: 8px; background: transparent; color: white; border: none; font-size: 20px; cursor: pointer; opacity: 0; transform: translateY(-8px); transition: opacity 0.4s ease, transform 0.4s ease; }
+    #helpPanel.visible #closeHelp { transform: translateY(0); opacity: 1; }
+    .icon-btn { background: none; border: none; margin: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; color: white; font-size: 14px; }
+    .icon-btn img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 5px; transition: transform 0.2s;}
+    .icon-btn span { font-weight: 500; opacity: 0.9;}
+    .icon-btn:hover img { transform: scale(1.1);}
+    .icon-btn.active img { border: 2px solid #00ff88; box-shadow: 0 0 10px #00ff88;}
+    #menu.visible .icon-btn, #helpPanel.visible li {
+    animation: fadeIn 0.5s ease forwards;
+    }
     #openMenu, #openHelp, #enterVR {
       position: absolute; z-index: 15; bottom: 15px;
       padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer;
@@ -25,7 +34,16 @@
     }
     #openMenu { left: 15px; background: #007bff; }
     #openHelp { left: 120px; background: #555; }
+    #closeHelp:hover { opacity: 1; transform: scale(1.1);}
     #enterVR { right: 15px; background: #00cc66; }
+    h3 { font-weight: 600; margin-bottom: 8px;}
+    ul { margin: 0; padding-left: 20px; }
+    li { line-height: 1.4em; }
+    @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+    }
+    
   </style>
 </head>
 
@@ -79,6 +97,13 @@
       look-at="[gps-camera]">
     </a-entity>
 
+    <a-entity id='arrow3'
+      gltf-model="assets/models/arrow.glb"
+      gps-entity-place="latitude: -0.718700; longitude: 36.432300;"
+      scale="1 1 1"
+      look-at="[gps-camera]">
+    </a-entity>
+    
   </a-scene>
 
   <!-- UI BUTTONS -->
@@ -104,6 +129,7 @@
   </div>
 
   <div id="helpPanel">
+    <button id="closeHelp">✕</button>
     <h3>How to Use</h3>
     <ul>
       <li>Scan any room marker to view its agenda.</li>
@@ -119,13 +145,13 @@
     // Toggle Menu
     document.getElementById('openMenu').onclick = () => {
       const menu = document.getElementById('menu');
-      menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
+      menu.classList.toggle('visible');
     };
 
     // Toggle Help
     document.getElementById('openHelp').onclick = () => {
       const help = document.getElementById('helpPanel');
-      help.style.display = (help.style.display === 'none' || help.style.display === '') ? 'block' : 'none';
+      help.classList.toggle('visible');
     };
 
     // VR Mode button
@@ -134,26 +160,38 @@
       scene.enterVR();
     };
 
+    // Close Help Button 
+    document.getElementById('closeHelp').onclick = () => {
+      const help = document.getElementById('helpPanel');
+      help.classList.remove('visible');
+    };
+
     // Navigation logic (switch visible arrows)
-    const allArrows = [document.getElementById('arrow1'), document.getElementById('arrow2')];
+    const allArrows = [document.getElementById('arrow1'), 
+                       document.getElementById('arrow2'), 
+                       document.getElementById('arrow3')
+                      ];
     const menuButtons = document.querySelectorAll('.icon-btn');
 
     menuButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        const room = btn.dataset.room;
+        menuButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         allArrows.forEach(a => a.setAttribute('visible', false)); // hide all arrows
 
+        // Show the relevant arrow(s)
+        const room = btn.dataset.room;
         if (room === 'stage1') {
           document.getElementById('arrow1').setAttribute('visible', true);
         } else if (room === 'stage2') {
           document.getElementById('arrow2').setAttribute('visible', true);
         } else if (room === 'podcast') {
-          // You can later add a 3rd arrow here for the podcast path
-          alert("Podcast navigation coming soon!");
+          document.getElementById('arrow3').setAttribute('visible', true);
         }
       });
     });
   </script>
 </body>
 </html>
+
 
