@@ -83,26 +83,44 @@
     </a-marker>
 
     <!-- Example Navigation Arrows (location-based AR) -->
-    <a-entity id="arrow1"
-      gltf-model="assets/models/arrow.glb"
-      gps-entity-place="latitude: -0.718500; longitude: 36.432100;"
-      scale="1 1 1"
-      look-at="[gps-camera]">
-    </a-entity>
+    <!-- STAGE 1 Arrows -->
+<a-entity id="arrow1a" gltf-model="assets/models/arrow.glb"
+  gps-entity-place="latitude: -0.718500; longitude: 36.432100;"
+  scale="1 1 1" look-at="[gps-camera]"></a-entity>
 
-    <a-entity id="arrow2"
-      gltf-model="assets/models/arrow.glb"
-      gps-entity-place="latitude: -0.718600; longitude: 36.432200;"
-      scale="1 1 1"
-      look-at="[gps-camera]">
-    </a-entity>
+<a-entity id="arrow1b" gltf-model="assets/models/arrow.glb"
+  gps-entity-place="latitude: -0.718550; longitude: 36.432150;"
+  scale="1 1 1" look-at="[gps-camera]"></a-entity>
 
-    <a-entity id='arrow3'
-      gltf-model="assets/models/arrow.glb"
-      gps-entity-place="latitude: -0.718700; longitude: 36.432300;"
-      scale="1 1 1"
-      look-at="[gps-camera]">
-    </a-entity>
+<a-entity id="arrow1c" gltf-model="assets/models/arrow.glb"
+  gps-entity-place="latitude: -0.718600; longitude: 36.432200;"
+  scale="1 1 1" look-at="[gps-camera]"></a-entity>
+
+<!-- STAGE 2 Arrows -->
+<a-entity id="arrow2a" gltf-model="assets/models/arrow.glb"
+  gps-entity-place="latitude: -0.718650; longitude: 36.432250;"
+  scale="1 1 1" look-at="[gps-camera]"></a-entity>
+
+<a-entity id="arrow2b" gltf-model="assets/models/arrow.glb"
+  gps-entity-place="latitude: -0.718700; longitude: 36.432300;"
+  scale="1 1 1" look-at="[gps-camera]"></a-entity>
+
+<a-entity id="arrow2c" gltf-model="assets/models/arrow.glb"
+  gps-entity-place="latitude: -0.718750; longitude: 36.432350;"
+  scale="1 1 1" look-at="[gps-camera]"></a-entity>
+
+<!-- PODCAST ROOM Arrows -->
+<a-entity id="arrow3a" gltf-model="assets/models/arrow.glb"
+  gps-entity-place="latitude: -0.718800; longitude: 36.432400;"
+  scale="1 1 1" look-at="[gps-camera]"></a-entity>
+
+<a-entity id="arrow3b" gltf-model="assets/models/arrow.glb"
+  gps-entity-place="latitude: -0.718850; longitude: 36.432450;"
+  scale="1 1 1" look-at="[gps-camera]"></a-entity>
+
+<a-entity id="arrow3c" gltf-model="assets/models/arrow.glb"
+  gps-entity-place="latitude: -0.718900; longitude: 36.432500;"
+  scale="1 1 1" look-at="[gps-camera]"></a-entity>
     
   </a-scene>
 
@@ -161,10 +179,32 @@
     };
 
     // Navigation logic (switch visible arrows)
-    const allArrows = [document.getElementById('arrow1'), 
-                       document.getElementById('arrow2'), 
-                       document.getElementById('arrow3')
-                      ];
+    // Grouped arrows for each location
+    const arrows = {
+      stage1: [
+        document.getElementById('arrow1a'),
+        document.getElementById('arrow1b'),
+        document.getElementById('arrow1c')
+      ],
+      stage2: [
+        document.getElementById('arrow2a'),
+        document.getElementById('arrow2b'),
+        document.getElementById('arrow2c')
+      ],
+      podcast: [
+        document.getElementById('arrow3a'),
+        document.getElementById('arrow3b'),
+        document.getElementById('arrow3c')
+      ]
+    };
+
+// Collect all arrows together for easy hide-all
+    const allArrows = [
+      ...arrows.stage1,
+      ...arrows.stage2,
+      ...arrows.podcast
+    ];
+
     const menuButtons = document.querySelectorAll('.icon-btn');
 
     menuButtons.forEach(btn => {
@@ -175,18 +215,18 @@
 
         // Show the relevant arrow(s)
         const room = btn.dataset.room;
-        if (room === 'stage1') {
-          document.getElementById('arrow1').setAttribute('visible', true);
-        } else if (room === 'stage2') {
-          document.getElementById('arrow2').setAttribute('visible', true);
-        } else if (room === 'podcast') {
-          document.getElementById('arrow3').setAttribute('visible', true);
+        if (arrows[room]) {
+          arrows[room].forEach(a => a.setAttribute('visible', true));
+        }
+        arrows[room].forEach((a, i) => {
+          setTimeout(() => a.setAttribute('visible', true), i * 300); // 300ms stagger
         }
       });
     });
   </script>
 </body>
 </html>
+
 
 
 
