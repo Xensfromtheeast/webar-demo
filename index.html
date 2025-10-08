@@ -179,6 +179,19 @@
       help.classList.toggle('visible');
     };
 
+    document.getElementById('openMenu').onclick = () => {
+      console.log("Menu button clicked");
+      const menu = document.getElementById('menu');
+      menu.classList.toggle('visible');
+    };
+
+    document.getElementById('openHelp').onclick = () => {
+      console.log("Help button clicked");
+      const help = document.getElementById('helpPanel');
+      help.classList.toggle('visible');
+    };
+
+
     // Navigation logic (switch visible arrows)
     // Grouped arrows for each location
     const arrows = {
@@ -227,6 +240,7 @@
   </script>
 </body>
 </html>
+
 
 
 
