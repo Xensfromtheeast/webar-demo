@@ -85,43 +85,43 @@
 
     <!-- Example Navigation Arrows (location-based AR) -->
     <!-- STAGE 1 Arrows -->
-<a-entity id="arrow1a" gltf-model="assets/models/arrow.glb"
-  gps-entity-place="latitude: -0.718500; longitude: 36.432100;"
-  scale="1 1 1" look-at="[gps-camera]"></a-entity>
-
-<a-entity id="arrow1b" gltf-model="assets/models/arrow.glb"
-  gps-entity-place="latitude: -0.718550; longitude: 36.432150;"
-  scale="1 1 1" look-at="[gps-camera]"></a-entity>
-
-<a-entity id="arrow1c" gltf-model="assets/models/arrow.glb"
-  gps-entity-place="latitude: -0.718600; longitude: 36.432200;"
-  scale="1 1 1" look-at="[gps-camera]"></a-entity>
-
-<!-- STAGE 2 Arrows -->
-<a-entity id="arrow2a" gltf-model="assets/models/arrow.glb"
-  gps-entity-place="latitude: -0.718650; longitude: 36.432250;"
-  scale="1 1 1" look-at="[gps-camera]"></a-entity>
-
-<a-entity id="arrow2b" gltf-model="assets/models/arrow.glb"
-  gps-entity-place="latitude: -0.718700; longitude: 36.432300;"
-  scale="1 1 1" look-at="[gps-camera]"></a-entity>
-
-<a-entity id="arrow2c" gltf-model="assets/models/arrow.glb"
-  gps-entity-place="latitude: -0.718750; longitude: 36.432350;"
-  scale="1 1 1" look-at="[gps-camera]"></a-entity>
-
-<!-- PODCAST ROOM Arrows -->
-<a-entity id="arrow3a" gltf-model="assets/models/arrow.glb"
-  gps-entity-place="latitude: -0.718800; longitude: 36.432400;"
-  scale="1 1 1" look-at="[gps-camera]"></a-entity>
-
-<a-entity id="arrow3b" gltf-model="assets/models/arrow.glb"
-  gps-entity-place="latitude: -0.718850; longitude: 36.432450;"
-  scale="1 1 1" look-at="[gps-camera]"></a-entity>
-
-<a-entity id="arrow3c" gltf-model="assets/models/arrow.glb"
-  gps-entity-place="latitude: -0.718900; longitude: 36.432500;"
-  scale="1 1 1" look-at="[gps-camera]"></a-entity>
+  <a-entity id="arrow1a" gltf-model="assets/models/arrow.glb"
+    gps-entity-place="latitude: -0.718500; longitude: 36.432100;"
+    scale="1 1 1" look-at="[gps-camera]"></a-entity>
+  
+  <a-entity id="arrow1b" gltf-model="assets/models/arrow.glb"
+    gps-entity-place="latitude: -0.718550; longitude: 36.432150;"
+    scale="1 1 1" look-at="[gps-camera]"></a-entity>
+  
+  <a-entity id="arrow1c" gltf-model="assets/models/arrow.glb"
+    gps-entity-place="latitude: -0.718600; longitude: 36.432200;"
+    scale="1 1 1" look-at="[gps-camera]"></a-entity>
+  
+  <!-- STAGE 2 Arrows -->
+  <a-entity id="arrow2a" gltf-model="assets/models/arrow.glb"
+    gps-entity-place="latitude: -0.718650; longitude: 36.432250;"
+    scale="1 1 1" look-at="[gps-camera]"></a-entity>
+  
+  <a-entity id="arrow2b" gltf-model="assets/models/arrow.glb"
+    gps-entity-place="latitude: -0.718700; longitude: 36.432300;"
+    scale="1 1 1" look-at="[gps-camera]"></a-entity>
+  
+  <a-entity id="arrow2c" gltf-model="assets/models/arrow.glb"
+    gps-entity-place="latitude: -0.718750; longitude: 36.432350;"
+    scale="1 1 1" look-at="[gps-camera]"></a-entity>
+  
+  <!-- PODCAST ROOM Arrows -->
+  <a-entity id="arrow3a" gltf-model="assets/models/arrow.glb"
+    gps-entity-place="latitude: -0.718800; longitude: 36.432400;"
+    scale="1 1 1" look-at="[gps-camera]"></a-entity>
+  
+  <a-entity id="arrow3b" gltf-model="assets/models/arrow.glb"
+    gps-entity-place="latitude: -0.718850; longitude: 36.432450;"
+    scale="1 1 1" look-at="[gps-camera]"></a-entity>
+  
+  <a-entity id="arrow3c" gltf-model="assets/models/arrow.glb"
+    gps-entity-place="latitude: -0.718900; longitude: 36.432500;"
+    scale="1 1 1" look-at="[gps-camera]"></a-entity>
     
   </a-scene>
 
@@ -176,7 +176,7 @@
     // Close Help Button 
     document.getElementById('closeHelp').onclick = () => {
       const help = document.getElementById('helpPanel');
-      help.classList.remove('visible');
+      help.classList.toggle('visible');
     };
 
     // Navigation logic (switch visible arrows)
@@ -227,6 +227,7 @@
   </script>
 </body>
 </html>
+
 
 
 
