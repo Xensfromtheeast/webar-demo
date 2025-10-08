@@ -27,7 +27,7 @@
     #menu.visible .icon-btn, #helpPanel.visible li {
     animation: fadeIn 0.5s ease forwards;
     }
-    #openMenu, #openHelp, #enterVR {
+    #openMenu, #openHelp {
       position: absolute; z-index: 15; bottom: 15px;
       padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer;
       border: none; color: white;
@@ -35,7 +35,7 @@
     #openMenu { left: 15px; background: #007bff; }
     #openHelp { left: 120px; background: #555; }
     #closeHelp:hover { opacity: 1; transform: scale(1.1);}
-    #enterVR { right: 15px; background: #00cc66; }
+    
     h3 { font-weight: 600; margin-bottom: 8px;}
     ul { margin: 0; padding-left: 20px; }
     li { line-height: 1.4em; }
@@ -62,7 +62,7 @@
 
     <!-- Marker-based AR agendas -->
     <!-- Stage 1 -->
-    <a-marker type="hiro" id="marker-onguan">
+    <a-marker type="pattern" url="assets/markers/marker-onguan.patt">
       <a-plane src="assets/images/agenda_stage1.png" width="1" height="1.414" rotation="-90 0 0"
         gesture-handler>
       </a-plane>
@@ -109,7 +109,7 @@
   <!-- UI BUTTONS -->
   <button id="openMenu">☰ Menu</button>
   <button id="openHelp">❔ Help</button>
-  <button id="enterVR">VR Mode</button>
+  
 
   <!-- HIDDEN MENUS -->
   <div id="menu">
@@ -154,12 +154,6 @@
       help.classList.toggle('visible');
     };
 
-    // VR Mode button
-    document.getElementById('enterVR').onclick = () => {
-      const scene = document.querySelector('a-scene');
-      scene.enterVR();
-    };
-
     // Close Help Button 
     document.getElementById('closeHelp').onclick = () => {
       const help = document.getElementById('helpPanel');
@@ -193,6 +187,7 @@
   </script>
 </body>
 </html>
+
 
 
 
