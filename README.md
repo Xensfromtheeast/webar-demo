@@ -1,4 +1,4 @@
-# 🕶️ Entumo AR — Agendas & Directions
+# 🕶️ Event AR — Agendas & Directions
 
 An interactive **Web Augmented Reality (WebAR)** experience built using **A-Frame** and **AR.js**, designed for the **Entumo Conference Center** in Naivasha, Kenya.  
 Attendees can use their smartphones to scan AR markers placed around the venue to view live agendas and follow GPS-based 3D navigation arrows to different rooms and stages.
