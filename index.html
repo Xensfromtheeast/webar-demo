@@ -2,50 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Entumo AR — Agendas & Directions</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-
-  <!-- A-Frame + AR.js (marker & GPS tracking) -->
+  <title>CIO100 VR Gallery — Stages and Awards</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-  <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/fcor/arjs-gestures/dist/gestures.js"></script>
-
-  <style>
-    body, html { margin: 0; overflow: hidden; font-family: 'Poppins', sans-serif; }
-    #menu, #helpPanel { position: absolute; z-index: 10; background: rgba(0,0,0,0.7); border-radius: 10px; color: white; padding: 10px; }
-    #menu { top: 10px; left: 10px; width: 180px; display: flex; flex-direction: column; align-items: center; gap: 10px; flex-wrap: nowrap; transform: translateX(-220px); opacity: 0; transition: all 0.4s ease; max-height: 85vh; overflow-y: auto; }
-    #menu h3 { text-align: center; width: 100%; margin-bottom: 5px; }
-    #menu.visible { transform: translateX(0); opacity: 1; }
-    #helpPanel { bottom: 100px; left: 10px; width: 300px; transform: translateY(120%); opacity: 0; transition: all 0.4s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); }
-    #closeHelp { position: absolute; top: 6px; right: 8px; background: transparent; color: white; border: none; font-size: 20px; cursor: pointer; opacity: 0; transform: translateY(-8px); transition: opacity 0.4s ease, transform 0.4s ease; }
-    #helpPanel.visible #closeHelp { transform: translateY(0); opacity: 1; }
-    .icon-btn { background: none; border: none; margin: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; color: white; font-size: 14px; }
-    .icon-btn img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 5px; transition: transform 0.2s;}
-    .icon-btn span { font-weight: 500; opacity: 0.9;}
-    .icon-btn:hover img { transform: scale(1.1);}
-    .icon-btn.active img { border: 2px solid #00ff88; box-shadow: 0 0 10px #00ff88;}
-    #menu.visible .icon-btn, #helpPanel.visible li {
-    animation: fadeIn 0.5s ease forwards;
-    }
-    #openMenu, #openHelp {
-      position: absolute; z-index: 15; bottom: 15px;
-      padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer;
-      border: none; color: white;
-    }
-    #openMenu { left: 15px; background: #007bff; }
-    #openHelp { left: 120px; background: #555; }
-    #closeHelp:hover { opacity: 1; transform: scale(1.1);}
-    
-    h3 { font-weight: 600; margin-bottom: 8px;}
-    ul { margin: 0; padding-left: 20px; }
-    li { line-height: 1.4em; }
-    @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-    }
-    
-  </style>
 </head>
 
 <body>
@@ -53,182 +12,51 @@
   <a-scene
     embedded
     vr-mode-ui="enabled: true"
-    renderer="logarithmicDepthBuffer: true;"
-    arjs="sourceType: webcam; debugUIEnabled: false;"
-    gesture-detector
+    background="color: #000"
   >
 
-    <!-- Camera (with GPS support) -->
-    <a-camera gps-camera rotation-reader></a-camera>
+    <!-- Environment (360° Background and Gallery Walls -->
+    <a-sky src="assets/environments/entumo_hall_360.jpg" rotation="0 -90 0"></a-sky>
 
-    <!-- Marker-based AR agendas -->
-    <!-- Stage 1 -->
-    <a-marker type="pattern" url="assets/markers/onguan.patt">
-      <a-plane src="assets/agendas/onguan.png" width="1" height="1.414" rotation="-90 0 0"
-        gesture-handler>
-      </a-plane>
-    </a-marker>
+    <!-- Lighting -->
+      <a-entity light="type: ambient; color: #bbb"></a-entity>
+      <a-entity light="type: directional; intensity: 0.8" position="1 1 1"></a-entity>
 
-    <!-- Stage 2 -->
-    <a-marker type="pattern" url="assets/markers/nabo.patt">
-      <a-plane src="assets/agendas/nabo.png" width="1" height="1.414" rotation="-90 0 0"
-        gesture-handler>
-      </a-plane>
-    </a-marker>
+      <!-- Award display panels -->
+      <a-entity id="gallery">
+        <!-- Example Winner Card -->
+        <a-plane src="assets/images/winners/2023_winner1.jpg"
+                 position="0 1.5 -3"
+                 width="2" height="1.2"
+                 material="shader: flat"
+                 class="clickable"></a-plane>
 
-    <!-- Podcast Room -->
-    <a-marker type="pattern" url="assets/markers/boardroom.patt">
-      <a-plane src="assets/agendas/boardroom.png" width="1" height="1.414" rotation="-90 0 0"
-        gesture-handler>
-      </a-plane>
-    </a-marker>
+        <!-- Title -->
+        <a-text value="CIO100 Winner 2023: GreenTech"
+                align="center"
+                position="0 0.5 -3"
+                color="#fff"
+                width="3.5"></a-text>
+      </a-entity>
 
-    <!-- Example Navigation Arrows (location-based AR) -->
-    <!-- STAGE 1 Arrows -->
-  <a-entity id="arrow1a" gltf-model="assets/models/arrow.glb"
-    gps-entity-place="latitude: -0.718500; longitude: 36.432100;"
-    scale="1 1 1" look-at="[gps-camera]"></a-entity>
-  
-  <a-entity id="arrow1b" gltf-model="assets/models/arrow.glb"
-    gps-entity-place="latitude: -0.718550; longitude: 36.432150;"
-    scale="1 1 1" look-at="[gps-camera]"></a-entity>
-  
-  <a-entity id="arrow1c" gltf-model="assets/models/arrow.glb"
-    gps-entity-place="latitude: -0.718600; longitude: 36.432200;"
-    scale="1 1 1" look-at="[gps-camera]"></a-entity>
-  
-  <!-- STAGE 2 Arrows -->
-  <a-entity id="arrow2a" gltf-model="assets/models/arrow.glb"
-    gps-entity-place="latitude: -0.718650; longitude: 36.432250;"
-    scale="1 1 1" look-at="[gps-camera]"></a-entity>
-  
-  <a-entity id="arrow2b" gltf-model="assets/models/arrow.glb"
-    gps-entity-place="latitude: -0.718700; longitude: 36.432300;"
-    scale="1 1 1" look-at="[gps-camera]"></a-entity>
-  
-  <a-entity id="arrow2c" gltf-model="assets/models/arrow.glb"
-    gps-entity-place="latitude: -0.718750; longitude: 36.432350;"
-    scale="1 1 1" look-at="[gps-camera]"></a-entity>
-  
-  <!-- PODCAST ROOM Arrows -->
-  <a-entity id="arrow3a" gltf-model="assets/models/arrow.glb"
-    gps-entity-place="latitude: -0.718800; longitude: 36.432400;"
-    scale="1 1 1" look-at="[gps-camera]"></a-entity>
-  
-  <a-entity id="arrow3b" gltf-model="assets/models/arrow.glb"
-    gps-entity-place="latitude: -0.718850; longitude: 36.432450;"
-    scale="1 1 1" look-at="[gps-camera]"></a-entity>
-  
-  <a-entity id="arrow3c" gltf-model="assets/models/arrow.glb"
-    gps-entity-place="latitude: -0.718900; longitude: 36.432500;"
-    scale="1 1 1" look-at="[gps-camera]"></a-entity>
-    
-  </a-scene>
+      <!-- Navigation Arrows -->
+      <a-entity id="teleport1" geometry="primitive: cone; radiusBottom: 0.2; height: 0.5"
+                position="2 0 -2" rotation="0 0 0"
+                material="color: #00cc88"
+                class="clickable"></a-entity>
 
-  <!-- UI BUTTONS -->
-  <button id="openMenu">☰ Menu</button>
-  <button id="openHelp">❔ Help</button>
-  
+      <!-- Camera rig for gaze control -->
+      <a-entity id="rig" position="0 1.6 0">
+        <a-camera look-controls wasd-controls>
+          <a-cursor fuse="true" fuse-timeout="1000"
+                    color="#00ffcc" scale="0.05 0.05 0.05"></a-cursor>
+        </a-camera>
+      </a-entity>
 
-  <!-- HIDDEN MENUS -->
-  <div id="menu">
-    <h3>Select Location</h3>
-    <button class="icon-btn" data-room="stage1">
-      <img src="assets/icons/1.png" alt="Stage 1">
-      <span>Stage 1</span>
-    </button>
-    <button class="icon-btn" data-room="stage2">
-      <img src="assets/icons/2.png" alt="Stage 2">
-      <span>Stage 2</span>
-    </button>
-    <button class="icon-btn" data-room="podcast">
-      <img src="assets/icons/mic.png" alt="Podcast Room">
-      <span>Podcast Room</span>
-    </button>
-  </div>
-
-  <div id="helpPanel">
-    <button id="closeHelp">✕</button>
-    <h3>How to Use</h3>
-    <ul>
-      <li>Scan any room marker to view its agenda.</li>
-      <li>Pinch to zoom and drag to rotate the agenda.</li>
-      <li>Tap an icon to view navigation arrows.</li>
-      <li>Use "VR Mode" for headset view.</li>
-      <li>GPS + Compass required for navigation.</li>
-    </ul>
-  </div>
-
-  <!-- SCRIPT LOGIC -->
-  <script>
-    // Toggle Menu
-    document.getElementById('openMenu').onclick = () => {
-      console.log("Menu button clicked");
-      const menu = document.getElementById('menu');
-      menu.classList.toggle('visible');
-    };
-
-    // Toggle Help
-    document.getElementById('openHelp').onclick = () => {
-      console.log("Help button clicked");
-      const help = document.getElementById('helpPanel');
-      help.classList.toggle('visible');
-    };
-
-    // Close Help Button 
-    document.getElementById('closeHelp').onclick = () => {
-      const help = document.getElementById('helpPanel');
-      help.classList.toggle('visible');
-    };
-
-    // Navigation logic (switch visible arrows)
-    // Grouped arrows for each location
-    const arrows = {
-      stage1: [
-        document.getElementById('arrow1a'),
-        document.getElementById('arrow1b'),
-        document.getElementById('arrow1c')
-      ],
-      stage2: [
-        document.getElementById('arrow2a'),
-        document.getElementById('arrow2b'),
-        document.getElementById('arrow2c')
-      ],
-      podcast: [
-        document.getElementById('arrow3a'),
-        document.getElementById('arrow3b'),
-        document.getElementById('arrow3c')
-      ]
-    };
-
-// Collect all arrows together for easy hide-all
-    const allArrows = [
-      ...arrows.stage1,
-      ...arrows.stage2,
-      ...arrows.podcast
-    ];
-
-    const menuButtons = document.querySelectorAll('.icon-btn');
-
-    menuButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        menuButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        allArrows.forEach(a => a.setAttribute('visible', false)); // hide all arrows
-
-        // Show the relevant arrow(s)
-        const room = btn.dataset.room;
-        if (arrows[room]) {
-          arrows[room].forEach(a => a.setAttribute('visible', true));
-        }
-        arrows[room].forEach((a, i) => {
-          setTimeout(() => a.setAttribute('visible', true), i * 300); // 300ms stagger
-        });
-      });
-    });
-  </script>
-</body>
+    </a-scene>
+  </body>
 </html>
+
 
 
 
